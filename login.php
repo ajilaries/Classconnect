@@ -88,13 +88,13 @@ if (isset($_POST['submit'])) {
             // ✅ Redirect based on role
             switch ($row['role']) {
                 case 'super_admin':
-                    header("Location: superadmindash.html");
+                    header("Location: superadmindash.php");
                     break;
                 case 'admin':
-                    header("Location: admindash.html");
+                    header("Location: admindash.php");
                     break;
                 case 'student':
-                    header("Location: studentdash.html");
+                    header("Location: studentdash.php");
                     break;
                 default:
                     header("Location: login.html");
