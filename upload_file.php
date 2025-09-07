@@ -13,20 +13,37 @@ $college_id = $_SESSION['college_id'];
 // ✅ Fetch available file types
 $typeResult = $conn->query("SELECT * FROM file_types ORDER BY type_name ASC");
 
+// ✅ Fetch available subjects (based on teacher_allocation + student's batch)
+$subjectStmt = $conn->prepare("
+    SELECT DISTINCT subject 
+    FROM teacher_allocations
+    WHERE batch_id = ?
+    ORDER BY subject ASC
+");
+$subjectStmt->bind_param("i", $batch_id);
+$subjectStmt->execute();
+$subjectResult = $subjectStmt->get_result();
+
+$subjects = [];
+while ($sub = $subjectResult->fetch_assoc()) {
+    $subjects[] = [
+        "id" => $sub['subject'], // using subject as "id" since we don't have numeric id
+        "name" => $sub['subject']
+    ];
+}
+$subjectStmt->close();
+
 // ✅ Handle Delete Request
 if (isset($_GET['delete'])) {
     $delete_id = intval($_GET['delete']);
 
-    // Make sure this file belongs to the current student
     $stmt = $conn->prepare("SELECT file_path FROM files WHERE id = ? AND user_id = ?");
     $stmt->bind_param("ii", $delete_id, $user_id);
     $stmt->execute();
     $res = $stmt->get_result();
 
     if ($file = $res->fetch_assoc()) {
-        if (file_exists($file['file_path'])) {
-            unlink($file['file_path']); // Delete file from server
-        }
+        if (file_exists($file['file_path'])) unlink($file['file_path']);
         $stmt->close();
 
         $deleteStmt = $conn->prepare("DELETE FROM files WHERE id = ? AND user_id = ?");
@@ -39,13 +56,14 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// ✅ Handle Edit Request (Update File Name & Type)
+// ✅ Handle Edit Request
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_id'])) {
     $edit_id = intval($_POST['edit_id']);
     $newName = mysqli_real_escape_string($conn, $_POST['edit_file_name']);
     $newTypeId = intval($_POST['edit_file_type']);
+    $newSubject = mysqli_real_escape_string($conn, $_POST['edit_subject']);
 
-    // Get type name
+    // 🔹 Get file type name
     $typeQuery = $conn->prepare("SELECT type_name FROM file_types WHERE id = ?");
     $typeQuery->bind_param("i", $newTypeId);
     $typeQuery->execute();
@@ -53,8 +71,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_id'])) {
     $fileTypeName = $typeResultRow ? $typeResultRow['type_name'] : 'Unknown';
     $typeQuery->close();
 
-    $updateStmt = $conn->prepare("UPDATE files SET file_name = ?, title = ? WHERE id = ? AND user_id = ?");
-    $updateStmt->bind_param("ssii", $newName, $fileTypeName, $edit_id, $user_id);
+    $updateStmt = $conn->prepare("
+        UPDATE files 
+        SET file_name = ?, title = ?, subject = ?
+        WHERE id = ? AND user_id = ?
+    ");
+    $updateStmt->bind_param("ssssi", $newName, $fileTypeName, $newSubject, $edit_id, $user_id);
     $updateStmt->execute();
     $updateStmt->close();
 
@@ -64,10 +86,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_id'])) {
 
 // ✅ Handle file upload
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["file"]) && !isset($_POST['edit_id'])) {
-    $fileName = mysqli_real_escape_string($conn, $_POST['file_name']);
+    $fileName   = mysqli_real_escape_string($conn, $_POST['file_name']);
     $fileTypeId = intval($_POST['file_type']);
+    $subject    = mysqli_real_escape_string($conn, $_POST['subject']); // Use actual 'subject'
 
-    // Get type name from table
+    // 🔹 Verify the subject exists for this batch
+    $subjectCheck = $conn->prepare("
+        SELECT subject FROM teacher_allocations 
+        WHERE batch_id = ? AND subject = ? LIMIT 1
+    ");
+    $subjectCheck->bind_param("is", $batch_id, $subject);
+    $subjectCheck->execute();
+    $subjectCheckResult = $subjectCheck->get_result();
+
+    if ($subjectCheckResult->num_rows === 0) {
+        die("<script>alert('❌ Invalid subject selected'); window.location.href='upload_file.php';</script>");
+    }
+    $subjectCheck->close();
+
+    // 🔹 Get file type name
     $typeQuery = $conn->prepare("SELECT type_name FROM file_types WHERE id = ?");
     $typeQuery->bind_param("i", $fileTypeId);
     $typeQuery->execute();
@@ -75,18 +112,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["file"]) && !isset($_
     $fileTypeName = $typeResultRow ? $typeResultRow['type_name'] : 'Unknown';
     $typeQuery->close();
 
+    // 🔹 Upload file
     $uploadDir = "uploads/";
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
     $uniqueName = time() . "_" . basename($_FILES["file"]["name"]);
     $filePath = $uploadDir . $uniqueName;
 
     if (move_uploaded_file($_FILES["file"]["tmp_name"], $filePath)) {
         $stmt = $conn->prepare("
-            INSERT INTO files (user_id, file_name, title, file_type, file_path, college_id, batch_id, uploaded_at) 
-            VALUES (?, ?, ?, 'assignment', ?, ?, ?, NOW())
+            INSERT INTO files (user_id, file_name, title, file_type, subject, file_path, college_id, batch_id, uploaded_at) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
         ");
-        $stmt->bind_param("isssii", $user_id, $fileName, $fileTypeName, $filePath, $college_id, $batch_id);
+        $stmt->bind_param("issssiii", $user_id, $fileName, $fileTypeName, $fileTypeName, $subject, $filePath, $college_id, $batch_id);
 
         if ($stmt->execute()) {
             echo "<script>alert('✅ File uploaded successfully'); window.location.href='upload_file.php';</script>";
@@ -101,8 +138,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_FILES["file"]) && !isset($_
 
 // ✅ Fetch student's own uploads
 $myFiles = $conn->prepare("
-    SELECT id, title, file_name, file_type, file_path, uploaded_at 
-    FROM files 
+    SELECT id, title, file_name, file_type, file_path, uploaded_at, subject
+    FROM files
     WHERE batch_id = ? AND college_id = ? AND user_id = ?
     ORDER BY uploaded_at DESC
 ");
@@ -119,6 +156,7 @@ $myFilesResult = $myFiles->get_result();
 </head>
 <body>
 <link rel="stylesheet" href="upload_files.css">
+
 <h2>📤 Upload Your File</h2>
 <form method="post" enctype="multipart/form-data">
     <input type="text" name="file_name" placeholder="Enter File Name" required><br><br>
@@ -126,9 +164,16 @@ $myFilesResult = $myFiles->get_result();
     <select name="file_type" required>
         <option value="">Select Type</option>
         <?php
-        $typeResult->data_seek(0); // Reset pointer
+        $typeResult->data_seek(0);
         while($type = $typeResult->fetch_assoc()) { ?>
             <option value="<?= $type['id'] ?>"><?= htmlspecialchars($type['type_name']) ?></option>
+        <?php } ?>
+    </select><br><br>
+
+    <select name="subject" required>
+        <option value="">Select Subject</option>
+        <?php foreach($subjects as $sub) { ?>
+            <option value="<?= htmlspecialchars($sub['name']) ?>"><?= htmlspecialchars($sub['name']) ?></option>
         <?php } ?>
     </select><br><br>
 
@@ -142,6 +187,7 @@ $myFilesResult = $myFiles->get_result();
 <?php if ($myFilesResult->num_rows > 0): ?>
 <table border="1" cellpadding="8">
     <tr>
+        <th>Subject</th>
         <th>Type</th>
         <th>File Name</th>
         <th>Uploaded At</th>
@@ -149,6 +195,7 @@ $myFilesResult = $myFiles->get_result();
     </tr>
     <?php while($row = $myFilesResult->fetch_assoc()) { ?>
     <tr>
+        <td><?= htmlspecialchars($row['subject'] ?? 'N/A') ?></td>
         <td><?= htmlspecialchars($row['title']) ?></td>
         <td><?= htmlspecialchars($row['file_name']) ?></td>
         <td><?= $row['uploaded_at'] ?></td>
@@ -164,7 +211,7 @@ $myFilesResult = $myFiles->get_result();
 <p>You haven't uploaded any files yet.</p>
 <?php endif; ?>
 
-<!-- Simple edit form (hidden until clicked) -->
+<!-- Edit Form -->
 <div id="editForm" style="display:none; margin-top:20px;">
     <h3>✏️ Edit File</h3>
     <form method="post">
@@ -177,6 +224,13 @@ $myFilesResult = $myFiles->get_result();
             $typeResult->data_seek(0);
             while($type = $typeResult->fetch_assoc()) { ?>
                 <option value="<?= $type['id'] ?>"><?= htmlspecialchars($type['type_name']) ?></option>
+            <?php } ?>
+        </select><br><br>
+
+        <select name="edit_subject" required>
+            <option value="">Select Subject</option>
+            <?php foreach($subjects as $sub) { ?>
+                <option value="<?= htmlspecialchars($sub['name']) ?>"><?= htmlspecialchars($sub['name']) ?></option>
             <?php } ?>
         </select><br><br>
 
