@@ -34,7 +34,7 @@ if (count($allocations) === 1) {
     $_SESSION['class_context'] = $allocations[0]['class_code'];
     $_SESSION['batch_id'] = $allocations[0]['batch_id']; // ✅ FIXED
     $_SESSION['subject']    = $selected['subject']; 
-    header("Location: teacherdash.html");
+    header("Location: teacherdash.php");
     exit;
 }
 
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['allocation_id'])) {
         if ($alloc['allocation_id'] == $selected) {
             $_SESSION['class_context'] = $alloc['class_code'];
             $_SESSION['batch_id'] = $alloc['batch_id']; // ✅ FIXED
-            header("Location: teacherdash.html");
+            header("Location: teacherdash.php");
             exit;
         }
     }
