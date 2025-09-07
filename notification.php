@@ -104,12 +104,7 @@ h2 { margin-bottom: 20px; }
             <?php endif; ?>
         </a>
 
-        <?php if ($role === 'teacher' && !empty($row['creator_id'])): ?>
-            <div class="actions">
-                <a class="btn btn-edit" href="edit_notification.php?id=<?= (int)$row['id'] ?>">✏️ Edit</a>
-                <a class="btn btn-delete" href="delete_notification.php?id=<?= (int)$row['id'] ?>" onclick="return confirm('Delete this notification?');">🗑️ Delete</a>
-            </div>
-        <?php endif; ?>
+    
     </div>
 <?php endwhile; ?>
 
