@@ -75,7 +75,7 @@ if (isset($_POST['submit'])) {
                 $_SESSION['batch_id']   = $alloc['batch_id'];
                 $_SESSION['class_code'] = $alloc['class_code'];
                 $_SESSION['subject']    = $alloc['subject'];  // <-- store subject too
-                header("Location: teacherdash.html");
+                header("Location: teacherdash.php");
                 exit();
                 }
                  else {
