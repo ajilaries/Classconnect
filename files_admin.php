@@ -2,7 +2,7 @@
 session_start();
 include "config.php";
 
-// ✅ Check if teacher/admin
+// ✅ Check if teacher
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'teacher') {
     header("Location: login.html");
     exit();
@@ -10,15 +10,46 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'teacher') {
 
 $college_id = $_SESSION['college_id'];
 $batch_id   = $_SESSION['batch_id'];
+$teacher_id = $_SESSION['user_id']; // ✅ assuming teacher's user_id is stored here
 
 // ✅ Initialize $file_type to avoid undefined variable warning
 $file_type = isset($_GET['file_type']) ? intval($_GET['file_type']) : 0;
 
-// ✅ Handle Delete
+// ✅ Fetch teacher's allocated subjects for this batch
+$subjectStmt = $conn->prepare("
+    SELECT subject 
+    FROM teacher_allocations 
+    WHERE teacher_id = ? AND batch_id = ?
+");
+$subjectStmt->bind_param("ii", $teacher_id, $batch_id);
+$subjectStmt->execute();
+$subjectResult = $subjectStmt->get_result();
+
+$teacherSubjects = [];
+while ($row = $subjectResult->fetch_assoc()) {
+    $teacherSubjects[] = $row['subject'];
+}
+
+// ✅ If teacher has no subjects allocated, block access (or show empty table)
+if (empty($teacherSubjects)) {
+    die("<h3>⚠️ No subjects allocated to you for this batch.</h3>");
+}
+
+// ✅ Build dynamic placeholders for subject filtering
+$placeholders = implode(',', array_fill(0, count($teacherSubjects), '?'));
+$paramTypes = str_repeat('s', count($teacherSubjects)); // subject is varchar
+
+// ✅ Handle Delete (with subject check!)
 if (isset($_GET['delete'])) {
     $file_id = intval($_GET['delete']);
-    $stmt = $conn->prepare("SELECT file_path FROM files WHERE id = ? AND college_id = ? AND batch_id = ?");
-    $stmt->bind_param("iii", $file_id, $college_id, $batch_id);
+
+    // ✅ Delete only if file belongs to teacher's allocated subjects
+    $deleteSql = "
+        SELECT file_path FROM files 
+        WHERE id = ? AND college_id = ? AND batch_id = ? AND subject IN ($placeholders)
+    ";
+    $stmt = $conn->prepare($deleteSql);
+    $stmt->bind_param("ii" . $paramTypes, $file_id, $college_id, $batch_id, ...$teacherSubjects);
     $stmt->execute();
     $res = $stmt->get_result();
     $file = $res->fetch_assoc();
@@ -27,8 +58,11 @@ if (isset($_GET['delete'])) {
         $filePath = $file['file_path'];
         if (file_exists($filePath)) unlink($filePath);
 
-        $delete = $conn->prepare("DELETE FROM files WHERE id = ? AND college_id = ? AND batch_id = ?");
-        $delete->bind_param("iii", $file_id, $college_id, $batch_id);
+        $delete = $conn->prepare("
+            DELETE FROM files 
+            WHERE id = ? AND college_id = ? AND batch_id = ? AND subject IN ($placeholders)
+        ");
+        $delete->bind_param("ii" . $paramTypes, $file_id, $college_id, $batch_id, ...$teacherSubjects);
         $delete->execute();
     }
 
@@ -45,29 +79,33 @@ while ($row = $type_result->fetch_assoc()) {
     $file_types[] = $row;
 }
 
-// ✅ Fetch files with optional filter
+// ✅ Fetch files with subject restriction + optional file_type filter
 if ($file_type) {
-    $stmt = $conn->prepare("
-        SELECT f.id, f.file_name, f.file_path, u.admission_no, ft.type_name AS file_type, 
+    $sql = "
+        SELECT f.id, f.file_name, f.file_path, f.subject, u.admission_no, ft.type_name AS file_type, 
                f.uploaded_at, f.deadline, u.first_name, u.last_name
         FROM files f
         JOIN users u ON f.user_id = u.id
         LEFT JOIN file_types ft ON f.file_type = ft.id
-        WHERE f.file_type = ? AND f.college_id = ? AND f.batch_id = ?
+        WHERE f.file_type = ? AND f.college_id = ? AND f.batch_id = ? 
+        AND f.subject IN ($placeholders)
         ORDER BY f.uploaded_at DESC
-    ");
-    $stmt->bind_param("iii", $file_type, $college_id, $batch_id);
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iii" . $paramTypes, $file_type, $college_id, $batch_id, ...$teacherSubjects);
 } else {
-    $stmt = $conn->prepare("
-        SELECT f.id, f.file_name, f.file_path, u.admission_no, ft.type_name AS file_type, 
+    $sql = "
+        SELECT f.id, f.file_name, f.file_path, f.subject, u.admission_no, ft.type_name AS file_type, 
                f.uploaded_at, f.deadline, u.first_name, u.last_name
         FROM files f
         JOIN users u ON f.user_id = u.id
         LEFT JOIN file_types ft ON f.file_type = ft.id
-        WHERE f.college_id = ? AND f.batch_id = ?
+        WHERE f.college_id = ? AND f.batch_id = ? 
+        AND f.subject IN ($placeholders)
         ORDER BY f.uploaded_at DESC
-    ");
-    $stmt->bind_param("ii", $college_id, $batch_id);
+    ";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii" . $paramTypes, $college_id, $batch_id, ...$teacherSubjects);
 }
 
 $stmt->execute();
@@ -112,6 +150,7 @@ $result = $stmt->get_result();
         <th>SL No</th>
         <th>Admission No</th>
         <th>File Name</th>
+        <th>Subject</th>
         <th>Type</th>
         <th>Uploaded By</th>
         <th>Uploaded At</th>
@@ -127,6 +166,7 @@ $result = $stmt->get_result();
         <td><?= $sl++ ?></td>
         <td><?= htmlspecialchars($row['admission_no'] ?? 'N/A') ?></td>
         <td><?= htmlspecialchars($row['file_name']) ?></td>
+        <td><?= htmlspecialchars($row['subject'] ?? 'N/A') ?></td>
         <td><?= htmlspecialchars($row['file_type'] ?? 'Unknown') ?></td>
         <td><?= htmlspecialchars($row['first_name']." ".$row['last_name']) ?></td>
         <td><?= $row['uploaded_at'] ?></td>
@@ -138,6 +178,7 @@ $result = $stmt->get_result();
     <?php endwhile; ?>
 </table>
 
+<!-- (Modals stay same as your code) -->
 <!-- Create File Type Modal -->
 <div id="typeModal" class="modal">
     <div class="modal-content">
