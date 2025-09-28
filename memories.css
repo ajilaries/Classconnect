@@ -1,0 +1,88 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #fdfdfd;
+  margin: 0;
+  padding: 20px;
+}
+
+.mem-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 28px;
+}
+
+.mem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  padding: 0 20px;
+}
+
+.mem-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  text-align: center;
+}
+
+.mem-card:hover {
+  transform: scale(1.02);
+}
+
+.mem-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.mem-card p {
+  padding: 10px;
+  margin: 0;
+  font-size: 14px;
+  color: #444;
+}
+
+/* Preview box */
+.preview-box {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.preview-box img {
+  max-width: 90%;
+  max-height: 70vh;
+  border-radius: 10px;
+}
+
+.preview-box p {
+  color: #fff;
+  margin-top: 10px;
+  font-size: 16px;
+}
+.upload-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 18px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #388E3C;
+}
