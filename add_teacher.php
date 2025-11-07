@@ -1,31 +1,49 @@
 <?php
 session_start();
 include "config.php";
-
 // ✅ Ensure only admin can access
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     echo "⛔ Unauthorized!";
     exit;
 }
 
+// ✅ Fetch departments for dropdown
+$departments = $conn->query("SELECT * FROM departments ORDER BY department_name ASC")->fetch_all(MYSQLI_ASSOC);
+
 // ✅ Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $first_name = trim($_POST['first_name']);
-    $last_name  = trim($_POST['last_name']);
-    $email      = trim($_POST['email']);
-    $password   = password_hash($_POST['password'], PASSWORD_DEFAULT); // ✅ Secure password
-    $college_id = intval($_SESSION['college_id']); // Assuming admin belongs to a college
+    $first_name    = trim($_POST['first_name']);
+    $last_name     = trim($_POST['last_name']);
+    $email         = trim($_POST['email']);
+    $password      = password_hash($_POST['password'], PASSWORD_DEFAULT); // ✅ Secure password
+    $college_id    = intval($_SESSION['college_id']); // Assuming admin belongs to a college
+    $department_id = intval($_POST['department_id']); // ✅ New: assign department
 
-    // Insert into users
-    $stmt = $conn->prepare("INSERT INTO users (first_name, last_name, email, password, role, college_id) VALUES (?, ?, ?, ?, 'teacher', ?)");
-    $stmt->bind_param("ssssi", $first_name, $last_name, $email, $password, $college_id);
-
-    if ($stmt->execute()) {
-        $newTeacherId = $conn->insert_id;
-        header("Location: allocate_teacher.php?teacher_id=" . $newTeacherId);
-        exit;
+    if (!$department_id) {
+        $error = "⚠️ Please select a department.";
     } else {
-        $error = "❌ Failed to add teacher: " . $conn->error;
+        // Insert into users
+$stmt = $conn->prepare("INSERT INTO users 
+    (first_name, last_name, email, password, role, college_id, department_id) 
+    VALUES (?, ?, ?, ?, 'teacher', ?, ?)");
+
+$stmt->bind_param("ssssii", 
+    $first_name, 
+    $last_name, 
+    $email, 
+    $password, 
+    $college_id, 
+    $department_id
+);
+
+        if ($stmt->execute()) {
+            $newTeacherId = $conn->insert_id;
+            // Redirect to allocation page for the newly added teacher
+            header("Location: allocate_teacher.php?department_id=" . $department_id);
+            exit;
+        } else {
+            $error = "❌ Failed to add teacher: " . $conn->error;
+        }
     }
 }
 ?>
@@ -40,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         form { background: white; padding: 20px; border-radius: 10px; max-width: 500px; margin: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         h1 { text-align: center; margin-bottom: 20px; }
         label { font-weight: bold; display: block; margin-top: 10px; }
-        input { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
         button { margin-top: 20px; width: 100%; background: #007bff; color: white; padding: 10px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
         button:hover { background: #0056b3; }
         .error { color: red; margin-bottom: 10px; text-align: center; }
@@ -63,6 +81,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label>Password:</label>
         <input type="password" name="password" required>
+
+        <label>Department:</label>
+        <select name="department_id" required>
+            <option value="">-- Select Department --</option>
+            <?php foreach ($departments as $d): ?>
+                <option value="<?= $d['id'] ?>"><?= htmlspecialchars($d['department_name']) ?></option>
+            <?php endforeach; ?>
+        </select>
 
         <button type="submit">Add Teacher</button>
     </form>

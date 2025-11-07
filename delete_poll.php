@@ -3,7 +3,7 @@ session_start();
 include "config.php";
 
 // Only admins allowed
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'teacher') {
   echo "🚫 Access denied!";
   exit();
 }

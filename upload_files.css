@@ -1,109 +1,130 @@
 /* upload_files.css */
 
-/* General page styling */
+/* General Page Style */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f9f9f9;
-    color: #333;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #f4f7fb;
+  margin: 0;
+  padding: 20px;
+  color: #333;
 }
 
-h2, h3 {
-    color: #007bff;
+/* Headings */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #444;
+  font-weight: 600;
 }
 
-/* Buttons */
-.btn {
-    padding: 10px 16px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    margin-right: 10px;
-    transition: background 0.3s ease;
+/* Form Styling */
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.btn:hover {
-    background-color: #0056b3;
-}
-
-/* Forms */
 form input[type="text"],
 form select,
 form input[type="file"] {
-    padding: 8px;
-    width: 100%;
-    max-width: 400px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-    font-size: 14px;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  transition: 0.2s ease;
 }
 
-form button[type="submit"] {
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
+form input[type="text"]:focus,
+form select:focus,
+form input[type="file"]:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0,123,255,0.2);
 }
 
-/* Table */
+button {
+  width: 100%;
+  background: #007bff;
+  color: #fff;
+  font-size: 15px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+button:disabled {
+  background: #b0c4de;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+/* Uploaded Files Table */
 table {
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 900px;
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 table th, table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-    font-size: 14px;
+  padding: 12px 15px;
+  text-align: left;
 }
 
 table th {
-    background-color: #007bff;
-    color: white;
+  background: #007bff;
+  color: #fff;
+  font-weight: 500;
 }
 
 table tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background: #f9f9f9;
 }
 
-/* Edit Form */
-#editForm {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 450px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+table tr:hover {
+  background: #eef5ff;
 }
 
-/* Upload & View Sections */
-.section {
-    margin-top: 20px;
+table a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
 }
 
-/* Alerts (optional) */
-.alert {
-    padding: 10px 15px;
-    margin-bottom: 15px;
-    border-radius: 6px;
+table a:hover {
+  text-decoration: underline;
 }
 
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
+/* Empty files message */
+p {
+  text-align: center;
+  color: #666;
+}
+.btn-back {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 8px 14px;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: 0.3s;
 }
 
-.alert-error {
-    background-color: #f8d7da;
-    color: #721c24;
+.btn-back:hover {
+  background: #0056b3;
 }

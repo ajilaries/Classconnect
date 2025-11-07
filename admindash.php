@@ -158,6 +158,10 @@ header("Expires: 0");
             <h2>👨‍🎓 Students</h2>
             <p>View, edit, or delete student records department-wise and batch-wise.</p>
         </a>
+        <a href="manageclass.php" class="card">
+            <h2>ClassManagement</h2>
+            <p>here the admin can manage class materials and all </p>
+        </a>
     </main>
 
     <!-- Footer -->

@@ -2,7 +2,7 @@
 session_start();
 include "config.php"; 
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'teacher') {
     die("Access Denied!");
 }
 
@@ -13,7 +13,7 @@ if (isset($_GET['poll_id'])) {
     $stmt->bind_param("i", $poll_id);
 
     if ($stmt->execute()) {
-        echo "<script>alert('Poll ended successfully!'); window.location.href='admin_poll.html';</script>";
+        echo "<script>alert('Poll ended successfully!'); window.location.href='teacher_poll.php';</script>";
     } else {
         echo "Failed to end poll: " . $stmt->error;
     }

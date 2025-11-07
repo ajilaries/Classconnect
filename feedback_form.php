@@ -38,9 +38,9 @@ $stmt->close();
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-  <h2>📝 Submit Feedback</h2>
-
   <form action="feedback.php" method="POST">
+    <h2>📝 Submit Feedback</h2>
+
     <!-- Teacher Dropdown -->
     <label for="teacher">Select Teacher:</label>
     <select name="teacher_id" id="teacher" required>
@@ -50,15 +50,12 @@ $stmt->close();
       <?php endforeach; ?>
     </select>
 
-    <!-- Subject Dropdown (populated by AJAX) -->
-    <label for="subject">Select Subject:</label>
-    <select name="subject" id="subject" required disabled>
-      <option value="">-- Select Subject --</option>
-    </select>
+    <!-- Subject (hidden, auto-filled) -->
+    <input type="hidden" name="subject" id="subject_input">
 
     <!-- Feedback Text -->
     <label for="feedback_text">Feedback:</label>
-    <textarea name="feedback_text" id="feedback_text" required></textarea>
+    <textarea name="feedback_text" id="feedback_text" placeholder="Write your feedback..." required></textarea>
 
     <!-- Category -->
     <label for="category">Category:</label>
@@ -70,40 +67,47 @@ $stmt->close();
       <option value="other">Other</option>
     </select>
 
-    <!-- Rating -->
+    <!-- Rating Stars -->
     <label>Rate Teacher:</label>
     <div class="rating">
-      <input type="radio" name="rating" value="5" required> ⭐⭐⭐⭐⭐
-      <input type="radio" name="rating" value="4"> ⭐⭐⭐⭐
-      <input type="radio" name="rating" value="3"> ⭐⭐⭐
-      <input type="radio" name="rating" value="2"> ⭐⭐
-      <input type="radio" name="rating" value="1"> ⭐
+      <input type="radio" id="star5" name="rating" value="5" required>
+      <label for="star5">★</label>
+      <input type="radio" id="star4" name="rating" value="4">
+      <label for="star4">★</label>
+      <input type="radio" id="star3" name="rating" value="3">
+      <label for="star3">★</label>
+      <input type="radio" id="star2" name="rating" value="2">
+      <label for="star2">★</label>
+      <input type="radio" id="star1" name="rating" value="1">
+      <label for="star1">★</label>
     </div>
 
     <!-- Anonymous -->
-    <label>
-      <input type="checkbox" name="anonymous" value="1"> Submit Anonymously
+    <label for="anonymous">
+      <input type="checkbox" id="anonymous" name="anonymous" value="1"> Submit Anonymously
     </label>
 
     <!-- Submit -->
-    <button type="submit">Submit</button>
+    <button type="submit">Submit Feedback</button>
   </form>
 
   <script>
-    // Load subjects when teacher is selected
+    // Auto-fill subject when teacher is selected
     $("#teacher").change(function() {
       var teacherId = $(this).val();
+      var batchId = <?= $batch_id ?>;
+
       if (teacherId) {
         $.ajax({
           url: "get_subjects.php",
           type: "POST",
-          data: { teacher_id: teacherId },
+          data: { teacher_id: teacherId, batch_id: batchId },
           success: function(data) {
-            $("#subject").html(data).prop("disabled", false);
+            $("#subject_input").val(data.trim());
           }
         });
       } else {
-        $("#subject").html('<option value="">-- Select Subject --</option>').prop("disabled", true);
+        $("#subject_input").val('');
       }
     });
   </script>

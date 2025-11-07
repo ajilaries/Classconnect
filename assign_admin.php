@@ -2,14 +2,14 @@
 session_start();
 include "config.php";
 
-// Check if user is super admin
+// Only super admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'super_admin') {
     echo "⛔ Unauthorized access!";
     exit;
 }
 
 // Fetch all colleges
-$colleges = $conn->query("SELECT college_code, college_name FROM colleges");
+$colleges = $conn->query("SELECT college_id, college_name, college_code FROM colleges");
 ?>
 
 <!DOCTYPE html>
@@ -29,8 +29,11 @@ $colleges = $conn->query("SELECT college_code, college_name FROM colleges");
         <form action="process_assign_admin.php" method="POST" class="card">
             <h2>Create New Admin</h2>
 
-            <label for="name">Full Name</label>
-            <input type="text" name="name" required>
+            <label for="first_name">First Name</label>
+            <input type="text" name="first_name" required>
+
+            <label for="last_name">Last Name</label>
+            <input type="text" name="last_name" required>
 
             <label for="email">Email</label>
             <input type="email" name="email" required>
@@ -38,12 +41,12 @@ $colleges = $conn->query("SELECT college_code, college_name FROM colleges");
             <label for="password">Password</label>
             <input type="password" name="password" required>
 
-            <label for="college_code">Assign to College</label>
-            <select name="college_code" required>
+            <label for="college_id">Assign to College</label>
+            <select name="college_id" required>
                 <option value="">-- Select College --</option>
                 <?php while($row = $colleges->fetch_assoc()) { ?>
-                    <option value="<?= $row['college_code'] ?>">
-                        <?= $row['college_name'] ?> (<?= $row['college_code'] ?>)
+                    <option value="<?= $row['college_id'] ?>">
+                        <?= htmlspecialchars($row['college_name']) ?> (<?= $row['college_code'] ?>)
                     </option>
                 <?php } ?>
             </select>

@@ -1,0 +1,154 @@
+/* ===== Default Light Theme ===== */
+body {
+    background: #f7f9fc;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+a, label, p, h1, h2, h3, h4, h5, h6 {
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+input, select, textarea, button, .container, .poll-container, li, table {
+    transition: all 0.3s ease;
+}
+
+/* Buttons Light Mode */
+button {
+    background: #276cdb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #174a9c;
+}
+
+/* Tables Light Mode */
+table {
+    background: #fff;
+    color: #333;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+}
+
+/* Cards / Containers Light Mode */
+.container, .poll-container, li {
+    background: #fff;
+    color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 15px;
+}
+
+/* ===== Dark Theme ===== */
+body.dark {
+    background: #121212;
+    color: #e0e0e0;
+}
+
+body.dark a,
+body.dark label,
+body.dark p,
+body.dark h1,
+body.dark h2,
+body.dark h3,
+body.dark h4,
+body.dark h5,
+body.dark h6 {
+    color: #e0e0e0;
+}
+
+/* Inputs & Textareas Dark Mode */
+body.dark input,
+body.dark select,
+body.dark textarea {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #555;
+}
+
+/* Buttons Dark Mode */
+body.dark button {
+    background: #333;
+    color: #fff;
+}
+
+body.dark button:hover {
+    background: #555;
+}
+
+/* Tables Dark Mode */
+body.dark table {
+    background: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.dark table th,
+body.dark table td {
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+/* Cards / Containers Dark Mode */
+body.dark .container,
+body.dark .poll-container,
+body.dark li {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Rating Stars Dark Mode */
+body.dark .rating label {
+    color: #ffb400;
+}
+
+/* Hover / Focus effects Dark Mode */
+body.dark input:focus,
+body.dark select:focus,
+body.dark textarea:focus {
+    background: #2a2a2a;
+    border-color: #276cdb;
+    box-shadow: 0 0 6px rgba(39, 108, 219, 0.3);
+}
+
+/* Smooth transitions everywhere */
+body, input, select, textarea, button, .container, .poll-container, li, table {
+    transition: all 0.3s ease;
+}
+/* ===== Dark theme for all div boxes/cards/lists ===== */
+body.dark .container,
+body.dark .poll-container,
+body.dark li,
+body.dark .card,
+body.dark .feed-item,   /* ClassFeed specific */
+body.dark .question-paper-item {
+    background: #1e1e1e;   /* dark background */
+    color: #e0e0e0;        /* bright text */
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* Text elements inside boxes */
+body.dark .container * ,
+body.dark .poll-container *,
+body.dark li *,
+body.dark .card *,
+body.dark .feed-item *,
+body.dark .question-paper-item * {
+    color: #e0e0e0 !important;
+}
+
+/* Links inside boxes */
+body.dark a {
+    color: #4ea1ff;  /* bright link color for dark mode */
+}

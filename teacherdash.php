@@ -86,7 +86,7 @@ header("Expires: 0");
       <button id="profileBtn">👤 Profile</button>
 
       <!-- Theme Toggle -->
-      <button onclick="toggleTheme()" id="themeToggle" title="Toggle Theme">🌙</button>
+      <!-- <button onclick="toggleTheme()" id="themeToggle" title="Toggle Theme">🌙</button> -->
 
       <!-- Logout -->
       <form action="logout.php" method="POST" style="display:inline;">
@@ -120,14 +120,14 @@ header("Expires: 0");
     <div class="button-grid">
       <button onclick="window.location.href='classfeed.php';">📝 Class Feed</button>
       <button onclick="window.location.href='files_admin.php';">📁 Files</button>
-      <button onclick="window.location.href='feedback.html';">💬 Feedback</button>
+      <button onclick="window.location.href='teacher_feedback.php';">💬 Feedback</button>
       <button onclick="window.location.href='timetable.html';">📅 Timetable</button>
-      <button onclick="window.location.href='https://www.mgu.ac.in/examinations/results/';">📈 Results</button>
-      <button onclick="window.location.href='admin_poll.html';">📊 Polls</button>
+      <button onclick="window.location.href='upload_marks.php';">Academics</button>
+      <button onclick="window.location.href='teacher_poll.php';">📊 Polls</button>
       <button onclick="window.location.href='notification.php';">🔔 Notifications</button>
       <button onclick="window.location.href='userslist.php';">Users</button>
       <button onclick="window.location.href='corner.php';">Teachers Corner</button>
-      <button onclick="window.location.href='questionpapers.php';">Question Papers</button>
+      <button onclick="window.location.href='upload_question_papers.php';">Question Papers</button>
     </div>
   </main>
 

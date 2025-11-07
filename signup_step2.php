@@ -2,14 +2,14 @@
 session_start();
 include "config.php";
 
-// 1️⃣ Ensure user comes from Step 1
+// 1️⃣ Ensure Step 1 was completed
 if (!isset($_SESSION['temp_user_id'])) {
     die("⛔ Session expired. Please start signup again.");
 }
 
-$temp_user_id = $_SESSION['temp_user_id'];
+$temp_user_id = intval($_SESSION['temp_user_id']);
 
-// 2️⃣ Fetch user's college_id from the users table
+// 2️⃣ Fetch user's college_id
 $stmt = $conn->prepare("SELECT college_id FROM users WHERE id = ?");
 $stmt->bind_param("i", $temp_user_id);
 $stmt->execute();
@@ -22,42 +22,46 @@ if (!$college_id) {
 }
 
 // 3️⃣ Handle form submission
-if (isset($_POST['submit'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $class_code = trim($_POST['class_code']);
+
     if (empty($class_code)) {
-        die("⚠️ Please enter the class code.");
-    }
-
-// 4️⃣ Verify class exists and belongs to the user's college
-$stmt = $conn->prepare("
-    SELECT b.id AS batch_id, d.id AS department_id
-    FROM batches b
-    JOIN departments d ON b.department_id = d.id
-    WHERE b.class_code = ? AND d.college_id = ?
-");
-$stmt->bind_param("si", $class_code, $college_id);
-$stmt->execute();
-$stmt->store_result();
-$stmt->bind_result($batch_id, $department_id);
-
-if ($stmt->num_rows === 0) {
-    die("❌ Invalid class code for your college. Contact admin.");
-}
-$stmt->fetch();
-$stmt->close();
-
-// 5️⃣ Update user with batch_id and department_id
-$stmt = $conn->prepare("UPDATE users SET batch_id = ?, department_id = ? WHERE id = ?");
-$stmt->bind_param("iii", $batch_id, $department_id, $temp_user_id);
-
-    if ($stmt->execute()) {
-        // Signup complete: log in user
-        unset($_SESSION['temp_user_id']);
-        $_SESSION['user_id'] = $temp_user_id;
-        header("Location: studentdash.html");
-        exit;
+        $error = "⚠️ Please enter the class code.";
     } else {
-        die("MySQL Error: " . $stmt->error);
+        // 4️⃣ Verify class exists for this college
+        $stmt = $conn->prepare("
+            SELECT b.id AS batch_id, d.id AS department_id
+            FROM batches b
+            JOIN departments d ON b.department_id = d.id
+            WHERE b.class_code = ? AND d.college_id = ?
+        ");
+        $stmt->bind_param("si", $class_code, $college_id);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($batch_id, $department_id);
+
+        if ($stmt->num_rows === 0) {
+            $error = "❌ Invalid class code for your college. Contact admin.";
+        } else {
+            $stmt->fetch();
+            
+            // 5️⃣ Update user with batch_id & department_id
+            $update = $conn->prepare("UPDATE users SET batch_id = ?, department_id = ? WHERE id = ?");
+            $update->bind_param("iii", $batch_id, $department_id, $temp_user_id);
+
+            if ($update->execute()) {
+                unset($_SESSION['temp_user_id']);
+                $_SESSION['user_id'] = $temp_user_id;
+
+                // ✅ Redirect to dashboard
+                header("Location: studentdash.php");
+                exit();
+            } else {
+                $error = "❌ Database error: " . $update->error;
+            }
+            $update->close();
+        }
+        $stmt->close();
     }
 }
 ?>
@@ -80,10 +84,15 @@ $stmt->bind_param("iii", $batch_id, $department_id, $temp_user_id);
 <main>
 <div class="signup-box">
     <h2>SIGNUP - Step 2</h2>
+
+    <?php if (!empty($error)) {
+        echo "<p style='color:red; font-weight:bold;'>$error</p>";
+    } ?>
+
     <form action="" method="post" onsubmit="return validateForm();">
         <input type="text" name="class_code" id="class_code" placeholder="Enter class code" required>
         <br><br>
-        <input type="submit" name="submit" value="Join Class">
+        <input type="submit" value="Join Class">
     </form>
 </div>
 </main>

@@ -1,75 +1,154 @@
-/* Reset and base styles */
-* {
+/* ===== Reset & Layout ===== */
+body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: linear-gradient(135deg, #276cdb, #174a9c, #0f2557);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-body {
-  background-color: white;
-  color: #333;
-  line-height: 1.6;
-}
-
-/* Navbar styles */
-.navbar {
-  background-color: #276cdb;
-  color: white;
-  padding: 15px 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.logo h2 {
-  font-size: 24px;
-  font-weight: 600;
-}
-
-/* Main content form area */
-.main-content {
-  max-width: 400px;
-  margin: 60px auto;
-  background-color: white;
-  padding: 25px 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-form label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
-  color: black;
-}
-
-textarea,
-select,
-input[type="number"] {
+/* ===== Glass Form Container ===== */
+form {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 35px 40px;
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+  max-width: 520px;
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  font-size: 15px;
+  color: #fff;
+  animation: fadeIn 0.6s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-input[type="checkbox"] {
-  margin-right: 6px;
-  transform: scale(1.1);
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #fff;
+  font-size: 26px;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/* Submit button */
-button[type="submit"] {
-  background-color: #276cdb;
-  color: white;
-  padding: 10px 16px;
-  font-size: 15px;
+/* ===== Labels & Inputs ===== */
+label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 600;
+  color: #f1f1f1;
+}
+
+select,
+textarea,
+input[type="text"] {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-button[type="submit"]:hover {
-  background-color: #1f5bc1;
+select option {
+  color: #000;
+}
+
+select:focus,
+textarea:focus,
+input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 10px rgba(39, 108, 219, 0.7);
+  border: 1px solid #61a0ff;
+}
+
+/* ===== Textarea ===== */
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ===== Rating Stars ===== */
+.rating {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  cursor: pointer;
+  font-size: 28px;
+  color: #888;
+  transition: transform 0.2s, color 0.3s;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+  color: #ffdd55; /* glowing gold */
+  text-shadow: 0 0 8px rgba(255, 221, 85, 0.6);
+  transform: scale(1.3);
+}
+
+/* ===== Checkbox ===== */
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+label[for="anonymous"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+/* ===== Button ===== */
+button {
+  margin-top: 25px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #61a0ff, #276cdb, #174a9c);
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #174a9c, #0f2557);
+  box-shadow: 0 6px 20px rgba(39, 108, 219, 0.6);
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* ===== Animation ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  form {
+    padding: 20px;
+    margin: 15px;
+  }
 }

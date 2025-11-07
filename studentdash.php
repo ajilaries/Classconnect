@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "config.php";
 // ✅ Only allow students
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
     header("Location: login.html");
@@ -81,7 +82,7 @@ header("Expires: 0");
     <div class="logo">ClassConnect</div>
     <div class="nav-buttons">
       <button id="profileBtn">👤 Profile</button>
-      <button onclick="toggleTheme()" id="themeToggle" title="Toggle Theme">🌙</button>
+      <!-- <button onclick="toggleTheme()" id="themeToggle" title="Toggle Theme">🌙</button> -->
 
       <!-- Logout -->
       <form action="logout.php" method="POST" style="display:inline;">
@@ -115,14 +116,14 @@ header("Expires: 0");
     <div class="button-grid">
       <button onclick="window.location.href='classfeed.php';">📝 Class Feed</button>
       <button onclick="window.location.href='upload_file.php';">📁 Files</button>
-      <button onclick="window.location.href='feedback.html';">💬 Feedback</button>
+      <button onclick="window.location.href='feedback_form.php';">💬 Feedback</button>
       <button onclick="window.location.href='timetable_uploaded.php';">📅 Timetable</button>
-      <button onclick="window.location.href='https://www.mgu.ac.in/examinations/results/';">📈 Results</button>
+      <button onclick="window.location.href='view_student_marks.php';">Academics</button>
       <button onclick="window.location.href='vote_poll.php';">📊 Polls</button>
-      <button onclick="window.location.href='notification_student.php';">🔔 Notifications</button>
+      <button onclick="window.location.href='notification.php';">🔔 Notifications</button>
       <button onclick="window.location.href='corner.php';">Teachers Corner</button>
       <button onclick="window.location.href='questionpapersstudent.php';">Question Papers</button>
-      <button onclick="window.location.href='memories.php';">Rewind</button>
+      <button onclick="window.location.href='https://www.mgu.ac.in/examinations/results/';">Results</button>
     </div>
   </main>
 
@@ -165,5 +166,8 @@ header("Expires: 0");
     });
   </script>
   <script src="toogletheme"></script>
+  <script>
+    
+  </script>
 </body>
 </html>
