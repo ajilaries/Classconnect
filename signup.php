@@ -3,7 +3,8 @@ session_start();
 include "config.php";
 
 if (isset($_POST['submit'])) {
-    // 1️⃣ Collect & sanitize input
+
+    // Collect input
     $first_name   = trim($_POST['first_name']);
     $last_name    = trim($_POST['last_name']);
     $admission_no = trim($_POST['admission_no']);
@@ -15,7 +16,7 @@ if (isset($_POST['submit'])) {
     $password     = $_POST['password'] ?? '';
     $class_code   = trim($_POST['class_code'] ?? '');
 
-    // 2️⃣ Basic validation
+    // Validation
     if (!$first_name || !$admission_no || !$email || !$register_no || !$dob || !$course || !$college_code || !$password) {
         die("⚠️ All fields are required.");
     }
@@ -28,7 +29,7 @@ if (isset($_POST['submit'])) {
         die("⚠️ Password must be at least 6 chars with 1 uppercase, 1 lowercase & 1 number.");
     }
 
-    // 3️⃣ Fetch college_id using college_code
+    // Fetch college_id
     $stmt = $conn->prepare("SELECT college_id FROM colleges WHERE college_code = ?");
     $stmt->bind_param("s", $college_code);
     $stmt->execute();
@@ -40,7 +41,7 @@ if (isset($_POST['submit'])) {
         die("⚠️ Invalid college code. Contact admin.");
     }
 
-    // 4️⃣ Fetch batch_id and department_id using class_code (optional)
+    // Fetch batch & dept
     $batch_id = null;
     $department_id = null;
 
@@ -63,24 +64,27 @@ if (isset($_POST['submit'])) {
         }
     }
 
-    // 5️⃣ Hash the password
+    // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    // 6️⃣ Insert user
+    // Insert user
     $stmt = $conn->prepare("
         INSERT INTO users 
-        (first_name, last_name, admission_no, email, register_no, dob, course, password, college_code, college_id, batch_id, department_id, role)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'student')
+        (first_name, last_name, admission_no, email, register_no, dob, course, password,
+        college_code, college_id, class_code, department_id, batch_id, role)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'student')
     ");
+
     $stmt->bind_param(
-        "ssssssssiiii",
-        $first_name, $last_name, $admission_no, $email, $register_no, $dob, $course,
-        $hashed_password, $college_code, $college_id, $batch_id, $department_id
+        "sssssssssisii",
+        $first_name, $last_name, $admission_no, $email, $register_no,
+        $dob, $course, $hashed_password, $college_code, $college_id,
+        $class_code, $department_id, $batch_id
     );
 
+
     if ($stmt->execute()) {
-        $_SESSION['temp_user_id'] = $conn->insert_id; // Save temp session
-        session_write_close();
+        $_SESSION['temp_user_id'] = $conn->insert_id;
         header("Location: signup_step2.php");
         exit;
     } else {
@@ -88,4 +92,3 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
-

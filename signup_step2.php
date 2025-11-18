@@ -51,9 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($update->execute()) {
                 unset($_SESSION['temp_user_id']);
-                $_SESSION['user_id'] = $temp_user_id;
 
-                // ✅ Redirect to dashboard
+                // 🔥 Add these:
+                $_SESSION['user_id'] = $temp_user_id;
+                $_SESSION['role'] = "student";
+                $_SESSION['batch_id'] = $batch_id;          // 🔥 NEW
+                $_SESSION['department_id'] = $department_id; // 🔥 NEW
+                $_SESSION['class_code'] = $class_code;
+                $_SESSION['college_id'] = $college_id;        // OPTIONAL but useful
+
                 header("Location: studentdash.php");
                 exit();
             } else {
