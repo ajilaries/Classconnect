@@ -1,4 +1,12 @@
-<!-- add_subject.php -->
+<?php
+session_start();
+
+// Role check: Only admin allowed
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    echo "<script>alert('🚫 Access denied: Admins only!'); window.location.href = 'questionpapers.php';</script>";
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +24,7 @@
     }
     button {
       padding: 10px 15px;
-      background-color: #28a745;
+      background-color: #276cdb;
       color: white;
       border: none;
       cursor: pointer;
@@ -32,3 +40,4 @@
   </form>
 </body>
 </html>
+

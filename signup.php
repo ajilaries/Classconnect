@@ -3,6 +3,16 @@ session_start();
 include "config.php";
 
 if (isset($_POST['submit'])) {
+    $first_name = $_POST['first_name'];
+    $last_name = $_POST['last_name'];
+    $admission_no = $_POST['admission_no'];
+    $email = $_POST['email'];
+    $register_no = $_POST['register_no'];
+    $dob = $_POST['dob'] ;
+    $class = $_POST['class'] ;
+    $course = $_POST['course'];
+    $password = $_POST['password'];
+    $password = $_POST['password'] ?? '';
 
     // Collect input
     $first_name   = trim($_POST['first_name']);
@@ -67,6 +77,8 @@ if (isset($_POST['submit'])) {
     // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+    $sql = "INSERT INTO users (first_name,last_name, admission_no, email, register_no, dob, class, course, password, class_code) 
+            VALUES ('$first_name','$last_name','$admission_no','$email','$register_no','$dob','$class','$course','$password','$class_code')";
     // Insert user
     $stmt = $conn->prepare("
         INSERT INTO users 
