@@ -1,0 +1,16 @@
+# Deny access to sensitive files
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.sql">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevent directory listing
+Options -Indexes
+
+# Enable URL rewriting for clean URLs (if needed)
+RewriteEngine On

@@ -1,37 +1,53 @@
+<?php
+include "config.php";
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'student') {
+    header("Location: login.php"); // redirect if not student
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Upload Files - ClassConnect</title>
+    <link rel="stylesheet" href="upload_files.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 </head>
 <body>
-    <link rel="stylesheet" href="upload_files.css">
     <header class="navbar">
-        <div class="logo">Classconnect</div>
+        <div class="logo">ClassConnect</div>
     </header>
-    <main>
-        <div class="upload-header">
-            <h2>upload files</h2>
-            <button onclick="toogleForm()">Upload files</button>
+
+    <main class="container">
+        <div class="upload-section">
+            <h2>FILES SECTION</h2>
+            <button onclick="toggleForm()">Upload Files</button>
         </div>
 
-    </div>
-    <div class="filebox" id="uploadform" style="display: none;">
-        <h3>Upload new files</h3>
-        <form action="fileupload_handler.php" method="post"enctype="multipart/form-data">
-            <input type="text" name="filename" id="filename" placeholder="Enter file name" required><br><br>
-            <input type="file" name="filepath" id="filepath" accept=".pdf,.jpg,.jpeg,.png" required><br><br>
-            <input type="submit" name="upload" value="Upload">
-        </form>
-    </div>
+        <div class="filebox" id="uploadForm" style="display: none;">
+            <form action="file_upload.php" method="post" enctype="multipart/form-data">
+                <input type="text" name="filename" placeholder="Enter file name" required><br><br>
+                <select name="subject_id" required>
+                    <option value="">-- Select Subject --</option>
+                    <option value="1">Maths</option>
+                    <option value="2">Science</option>
+                    <option value="3">English</option>
+                    <!-- Add more subjects dynamically if needed -->
+                </select><br><br>
+                <textarea name="comment" placeholder="Any comment or description (optional)" rows="3"></textarea><br><br>
+                <input type="file" name="filepath" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required><br><br>
+                <input type="submit" name="upload" value="Upload">
+            </form>
+        </div>
     </main>
+
     <script>
-        function toogleForm(){
-            const form=document.getElementById("uploadform");
+        function toggleForm() {
+            const form = document.getElementById("uploadForm");
             form.style.display = form.style.display === "none" ? "block" : "none";
         }
-        
     </script>
 </body>
 </html>

@@ -1,0 +1,95 @@
+/* Reset styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background-color: #f9fafc;
+  padding: 40px;
+}
+
+.wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.subject-title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.subject-title span {
+  color: #276cdb;
+  font-weight: bold;
+}
+
+.paper-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.paper-list li {
+  background-color: #eef3fc;
+  padding: 15px 20px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.paper-list li:hover {
+  background-color: #dce7f9;
+}
+
+.paper-link {
+  color: #276cdb;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.paper-link:hover {
+  text-decoration: underline;
+}
+
+.upload-btn,
+.delete-btn {
+  display: inline-block;
+  text-align: center;
+  padding: 12px 20px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.upload-btn {
+  background-color: #276cdb;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.upload-btn:hover {
+  background-color: #1e59b8;
+}
+
+.delete-subject-btn {
+  background-color: #e74c3c; /* nice red */
+  border: none;
+  margin-top: 10px;
+}
+
+.delete-subject-btn:hover {
+  background-color: #c0392b;
+}

@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($stmt->execute()) {
                 echo "File uploaded successfully.";
+                header("location=view_subject.php");
             } else {
                 echo "Database error: " . $conn->error;
             }

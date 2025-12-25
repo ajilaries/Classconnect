@@ -1,0 +1,111 @@
+/* style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Filter form */
+form {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+}
+
+/* Table */
+table {
+    width: 95%;
+    margin: auto;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+th {
+    background: #34495e;
+    color: #fff;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tr:hover {
+    background: #f1f1f1;
+}
+
+/* Action Links */
+a {
+    text-decoration: none;
+    color: #3498db;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Delete button */
+td a[href*="delete"] {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+td a[href*="delete"]:hover {
+    color: #c0392b;
+}
+
+/* Download link */
+td a[href*="download"], 
+td a[target="_blank"] {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+td a[target="_blank"]:hover {
+    color: #1e8449;
+}
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 800px;
+}

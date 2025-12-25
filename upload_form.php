@@ -1,7 +1,17 @@
 <?php
 include "config.php";
+session_start();
+
+// Role check: Only admin and teacher can access
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'Student'])) {
+    echo "<script>alert('🚫 Access Denied: Only Admins  can upload question papers.'); window.location.href='questionpapers.php';</script>";
+    exit();
+}
+
+// Fetch subject list
 $subjects = mysqli_query($conn, "SELECT * FROM subjects");
 ?>
+
 
 
 <!DOCTYPE html>
