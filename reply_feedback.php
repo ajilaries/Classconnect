@@ -1,5 +1,5 @@
 <?php
-include 'db_connection.php';
+include "config.php";
 
 $id = $_POST['id'];
 $reply = $_POST['reply'];
